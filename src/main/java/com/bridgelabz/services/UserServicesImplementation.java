@@ -2,11 +2,10 @@ package com.bridgelabz.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.bridgelabz.exception.UserException;
 import com.bridgelabz.model.Login;
 import com.bridgelabz.model.PasswordUpdate;
@@ -19,32 +18,21 @@ import com.bridgelabz.util.JwtGenerator;
 import com.bridgelabz.util.MailServiceProvider;
 
 @Service
-public class UserServicesImplementation implements UserServices {
-
-	User user = new User();
-
+public class UserServicesImplementation implements IUserServices {
+	private User user = new User();
 	@Autowired
 	private UserRepositoryImplementation repository;
-
 	@Autowired
 	private BCryptPasswordEncoder encryption;
-
 	@Autowired
 	private JwtGenerator generate;
-
 	@Autowired
 	private MailResponse response;
-
 	@Autowired
 	private MailObject mailObject;
-
-	@Autowired
-	private ModelMapper modelMapper;
-
 	@Autowired
 	private MailServiceProvider mailServiceProvider;
 
-	@Transactional
 	@Override
 	public boolean register(UserDto information) {
 		System.out.println("in regis service, before ....");
@@ -54,8 +42,7 @@ public class UserServicesImplementation implements UserServices {
 		if (user == null) {
 			System.out.println("in regis service , above mapping");
 
-			user = modelMapper.map(information, User.class);
-			// BeanUtils.copyProperties(information, User.class);
+			BeanUtils.copyProperties(information, User.class);
 			user.setCreatedDate(LocalDateTime.now());
 			String epassword = encryption.encode(information.getPassword());
 			user.setPassword(epassword);
@@ -84,7 +71,6 @@ public class UserServicesImplementation implements UserServices {
 		}
 	}
 
-	@Transactional
 	@Override
 	public User login(Login information) {
 		User user = repository.getUser(information.getUsername());
@@ -106,7 +92,6 @@ public class UserServicesImplementation implements UserServices {
 		}
 	}
 
-	@Transactional
 	@Override
 	public boolean update(PasswordUpdate information, String token) {
 		if (information.getNewPassword().equals(information.getConfirmPassword())) {
@@ -134,7 +119,6 @@ public class UserServicesImplementation implements UserServices {
 
 	}
 
-	@Transactional
 	@Override
 	public boolean verify(String token) throws Exception {
 		System.out.println("id in verification" + (long) generate.parseJWT(token));
@@ -160,7 +144,6 @@ public class UserServicesImplementation implements UserServices {
 		}
 	}
 
-	@Transactional
 	@Override
 	public List<User> getUsers() {
 		List<User> users = repository.getUsers();
@@ -168,7 +151,6 @@ public class UserServicesImplementation implements UserServices {
 		return users;
 	}
 
-	@Transactional
 	@Override
 	public User getSingleUser(String token) {
 		Long id;
