@@ -10,7 +10,7 @@ import com.bridgelabz.model.User;
 import com.bridgelabz.model.UserDto;
 
 @Service
-public interface UserServices {
+public interface IUserServices {
 
 	public User login(Login information);
 
