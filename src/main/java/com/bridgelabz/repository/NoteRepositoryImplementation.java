@@ -1,7 +1,9 @@
 package com.bridgelabz.repository;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
+
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,8 @@ public class NoteRepositoryImplementation implements INoteRepository {
 	@Override
 	public Note findById(long id) {
 		Session session = entityManager.unwrap(Session.class);
-		Query query = (Query) session.createQuery("from Note where id=:id");
-		query.setParameter("id", id);
+		Query query = (Query) session.createQuery("from Note where note_id=:note_id");
+		query.setParameter("note_id", id);
 		return (Note) query.uniqueResult();
 	}
 
@@ -36,9 +38,9 @@ public class NoteRepositoryImplementation implements INoteRepository {
 	@Override
 	public boolean deleteNote(long id, long userid) {
 		Session session = entityManager.unwrap(Session.class);
-		String hql = "DELETE FROM Note " + "WHERE id = :id";
+		String hql = "DELETE FROM Note " + "WHERE note_id = :note_id";
 		Query query = session.createQuery(hql);
-		query.setParameter("id", id);
+		query.setParameter("note_id", id);
 		int result = query.executeUpdate();
 		if (result >= 1) {
 			return true;
@@ -53,9 +55,8 @@ public class NoteRepositoryImplementation implements INoteRepository {
 
 		System.out.println("in repository");
 		Session session = entityManager.unwrap(Session.class);
-		return session.createQuery(
-				"from Note where id='" + userid + "'" + " and is_trashed=false and is_archieved=false ORDER BY id DESC")
-				.list();
+		return session.createQuery("from Note where note_id='" + userid + "'"
+				+ " and is_trashed=false and is_archieved=false ORDER BY id DESC").list();
 	}
 
 	@Transactional
