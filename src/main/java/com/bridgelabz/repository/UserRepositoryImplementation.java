@@ -1,11 +1,14 @@
 package com.bridgelabz.repository;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
+
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.bridgelabz.model.PasswordUpdate;
 import com.bridgelabz.model.User;
 
