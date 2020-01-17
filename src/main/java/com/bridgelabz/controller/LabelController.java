@@ -1,6 +1,7 @@
 package com.bridgelabz.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.bridgelabz.model.Label;
 import com.bridgelabz.model.LabelDto;
 import com.bridgelabz.model.LabelUpdate;
@@ -22,7 +24,6 @@ import com.bridgelabz.services.LabelServiceImplementation;
 @RestController
 @RequestMapping("/label")
 public class LabelController {
-
 	@Autowired
 	private LabelServiceImplementation service;
 
@@ -70,13 +71,13 @@ public class LabelController {
 		return ResponseEntity.status(HttpStatus.OK).body(new Response("label updated", 200, labelInfo));
 	}
 
-	@PostMapping("/delete")
-	public ResponseEntity<Response> delete(@RequestBody LabelUpdate labelInfo, @RequestHeader("token") String token) {
-		System.out.println("conroller");
-		service.deleteLabel(labelInfo, token);
-		return ResponseEntity.status(HttpStatus.OK).body(new Response("label deleted", 200, labelInfo));
-
-	}
+//	@PostMapping("/delete")
+//	public ResponseEntity<Response> delete(@RequestBody LabelUpdate labelInfo, @RequestHeader("token") String token) {
+//		System.out.println("conroller");
+//		service.deleteLabel(labelInfo, token);
+//		return ResponseEntity.status(HttpStatus.OK).body(new Response("label deleted", 200, labelInfo));
+//
+//	}
 
 	@GetMapping("/getAllLabel")
 	public ResponseEntity<Response> get(@RequestHeader("token") String token) {
