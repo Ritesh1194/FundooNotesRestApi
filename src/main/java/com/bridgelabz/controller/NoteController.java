@@ -22,13 +22,13 @@ import com.bridgelabz.model.NoteUpdate;
 import com.bridgelabz.model.ReminderDto;
 import com.bridgelabz.responses.Response;
 import com.bridgelabz.services.INoteServices;
+import com.bridgelabz.services.NoteServiceImpl;
 
 @RestController
 @RequestMapping("/note")
 public class NoteController {
-
 	@Autowired
-	private INoteServices noteServices;
+	private NoteServiceImpl noteServices ;
 
 	@PostMapping("/create")
 	public ResponseEntity<Response> registration(@RequestBody NoteDto information, @RequestHeader String token) {
@@ -41,7 +41,7 @@ public class NoteController {
 
 	@PutMapping("/update")
 	public ResponseEntity<Response> update(@RequestBody NoteUpdate note, @RequestHeader("token") String token) {
-		System.out.println("inside update controller" + note.getId());
+		System.out.println("inside update controller" + note.getNoteId());
 		noteServices.updateNote(note, token);
 
 		return ResponseEntity.status(HttpStatus.OK).body(new Response("note updated", 200));
