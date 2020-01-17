@@ -1,8 +1,7 @@
+
 package com.bridgelabz.controller;
 
 import java.util.List;
-
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,15 +23,14 @@ import com.bridgelabz.model.User;
 import com.bridgelabz.model.UserDto;
 import com.bridgelabz.responses.Response;
 import com.bridgelabz.responses.UsersDetail;
-import com.bridgelabz.services.UserServices;
+import com.bridgelabz.services.IUserServices;
 import com.bridgelabz.util.JwtGenerator;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
 	@Autowired
-	private UserServices userService;
-
+	private IUserServices userService;
 	@Autowired
 	private JwtGenerator generate;
 
@@ -69,6 +68,7 @@ public class UserController {
 		System.out.println("inside login controler");
 		if (userInformation != null) {
 			String token = generate.jwtToken(userInformation.getUserId());
+			System.out.println(token);
 			return ResponseEntity.status(HttpStatus.ACCEPTED).header("login successfull", information.getUsername())
 					.body(new UsersDetail(token, 200, information));
 		} else {
@@ -78,16 +78,18 @@ public class UserController {
 		}
 	}
 
-	@RequestMapping("/forgotpassword")
-	public ResponseEntity<Response> forgotPassword(@RequestBody @Valid User user) {
-		boolean result = userService.isUserExist(user.getEmail());
-		System.out.println(result);
+	@PostMapping("/forgotpassword")
+	public ResponseEntity<Response> forgogPassword(@RequestParam("email") String email) {
+		System.out.println(email);
+
+		boolean result = userService.isUserExist(email);
 		if (result) {
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Response("user exist", 200));
 		} else {
 			return ResponseEntity.status(HttpStatus.ACCEPTED)
 					.body(new Response("user does not exist with given email id", 400));
 		}
+
 	}
 
 	@PutMapping("/update/{token}")
