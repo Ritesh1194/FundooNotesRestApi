@@ -106,40 +106,43 @@ public class NoteRepositoryImplementation implements INoteRepository {
 		return query.getResultList();
 	}
 
-//	@Transactional
-//	@Override
-//	public boolean setRestored(Long userId, Long noteId) {
-//		System.out.println();
-//		Session currentSession = entityManager.unwrap(Session.class);
-//		Note note = findById(noteId);
-//		if (note.getUserId().equals(userId)) {
-//			if (note.isTrashed()) {
-//				note.setTrashed(false);
-//				note.setCreatedDateAndTime(LocalDateTime.now());
-//				currentSession.saveOrUpdate(note);
-//				return true;
-//			}
-//			return false;
-//		}
-//
-//		return false;
-//	}
-//
-//	@Override
-//	public boolean setTrashed(Long userId, Long noteId) {
-//		Session currentSession = entityManager.unwrap(Session.class);
-//		Note note = findById(noteId);
-//		if (note.getUserId().equals(userId)) {
-//			if (!note.isTrashed()) {
-//				note.setTrashed(true);
-//				note.setCreatedDateAndTime(LocalDateTime.now());
-//				currentSession.save(note);
-//				return true;
-//			}
-//			return false;
-//		}
-//		return false;
-//	}
+	@Transactional
+	@Override
+	public boolean setRestored(Long userId, Long noteId) {
+		System.out.println();
+		Session currentSession = entityManager.unwrap(Session.class);
+		Note note = findById(noteId);
+		if (note.getUserId().equals(userId)) {
+			if (note.isTrashed()) {
+				note.setTrashed(false);
+				note.setCreatedDateAndTime(LocalDateTime.now());
+				currentSession.saveOrUpdate(note);
+				return true;
+			}
+			return false;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean setTrashed(Long userId, Long noteId) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		System.out.println(noteId);
+		Note note = findById(noteId);
+		System.out.println("Note Trashed" + note.getUserId());
+		if (note.getUserId().equals(userId)) {
+			System.out.println("First If Condition");
+			if (!note.isTrashed()) {
+				note.setTrashed(true);
+				note.setCreatedDateAndTime(LocalDateTime.now());
+				currentSession.save(note);
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
 
 	@Override
 	public boolean setRemaineder(Long userId, Long noteId, LocalDateTime time) {
