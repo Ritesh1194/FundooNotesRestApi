@@ -55,9 +55,9 @@ public class UserController {
 		System.out.println("token for verification" + token);
 		boolean update = userService.verify(token);
 		if (update) {
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Response("verified", 200));
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Response("verified", 200, token));
 		} else {
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Response("not verified", 400));
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Response("not verified", 400, token));
 		}
 	}
 
@@ -84,10 +84,10 @@ public class UserController {
 
 		boolean result = userService.isUserExist(email);
 		if (result) {
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Response("user exist", 200));
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Response("user exist", 200, email));
 		} else {
 			return ResponseEntity.status(HttpStatus.ACCEPTED)
-					.body(new Response("user does not exist with given email id", 400));
+					.body(new Response("user does not exist with given email id", 400, email));
 		}
 
 	}
