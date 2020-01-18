@@ -48,6 +48,7 @@ public class NoteServiceImpl implements INoteServices {
 			if (user != null) {
 				// BeanUtils.copyProperties(noteDto, Note.class);
 				note = modelMapper.map(noteDto, Note.class);
+				note.setUserId(userId);
 				note.setCreatedDateAndTime(LocalDateTime.now());
 				note.setArchieved(false);
 				note.setPinned(false);
@@ -278,24 +279,23 @@ public class NoteServiceImpl implements INoteServices {
 		return null;
 	}
 
-//	@Transactional
-//	@Override
-//	public boolean restored(String token, Long noteId) {
-//		Long userId = (long) tokenGenerator.parseJWT(token);
-//		if (noteRepository.setRestored(userId, noteId)) {
-//			return true;
-//		}
-//		return false;
-//	}
-//
-//	@Transactional
-//	@Override
-//	public boolean trashed(String token, Long noteId) {
-////			Long userId=webClientService.getUserId(token);
-//		Long userId = (long) tokenGenerator.parseJWT(token);
-//		if (noteRepository.setTrashed(userId, noteId)) {
-//			return true;
-//		}
-//		return false;
-//	}
+	@Transactional
+	@Override
+	public boolean restored(String token, Long noteId) {
+		Long userId = (long) tokenGenerator.parseJWT(token);
+		if (noteRepository.setRestored(userId, noteId)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Transactional
+	@Override
+	public boolean trashed(String token, Long noteId) {
+		Long userId = (long) tokenGenerator.parseJWT(token);
+		if (noteRepository.setTrashed(userId, noteId)) {
+			return true;
+		}
+		return false;
+	}
 }
