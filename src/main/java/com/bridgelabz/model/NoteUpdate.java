@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class NoteUpdate {
-	private long id;
+	private long noteId;
 
 	private String title;
 

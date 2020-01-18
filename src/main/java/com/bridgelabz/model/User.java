@@ -1,8 +1,7 @@
 package com.bridgelabz.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
+import java.util.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,32 +10,32 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "User")
+@Component
 public class User {
 
 	@Id
 	@Column(name = "user_id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long userId;
 
-	@Column(nullable = false)
 	private String firstname;
 
-	@Column(nullable = false)
 	private String lastname;
 
-	@Column(nullable = false)
 	private String email;
 
 	private String password;
 
-	@Column(nullable = false)
 	private Long mobileNumber;
 
 	private LocalDateTime createdDate;
@@ -46,12 +45,5 @@ public class User {
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "userId")
 
-//	@ManyToMany(cascade = CascadeType.ALL)
-//	@JoinTable(name = "Collaborator_Note", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-//			@JoinColumn(name = "note_id") })
 	private List<Note> note;
-//	@JsonManagedReference
-//	@JsonIgnore
-//	private List<Note> colaborateNote;
-
 }

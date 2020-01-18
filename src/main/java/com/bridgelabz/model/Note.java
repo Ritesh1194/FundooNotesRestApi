@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,27 +28,32 @@ import lombok.Data;
 public class Note {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long noteId;
 	private String title;
 	private String description;
 	private String color;
+
+	@Column(columnDefinition = "boolean default false")
 	private boolean isArchieved;
+
+	@Column(columnDefinition = "boolean default false")
 	private boolean isPinned;
+
+	@Column(columnDefinition = "boolean default false")
 	private boolean isTrashed;
+
 	private LocalDateTime createdDateAndTime;
 	private LocalDateTime upDateAndTime;
 	private LocalDateTime reminder;
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "Label_Note", joinColumns = { @JoinColumn(name = "note_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "label_id") })
-	@JsonBackReference
-	@JsonIgnore
-	private List<Label> list;
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "Collaborator_Note", joinColumns = { @JoinColumn(name = "note_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "user_id") })
-	@JsonBackReference
-	private List<User> colabUser;
 
+	private Long userId;
+
+	private Long labelId;
+
+	@JoinColumn(name = "user_id")
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "note_label", joinColumns = { @JoinColumn(name = "note_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "label_id") })
+	private List<Label> list;
 }
