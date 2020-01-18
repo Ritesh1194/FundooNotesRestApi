@@ -1,6 +1,7 @@
 package com.bridgelabz.repository;
 
 import java.util.List;
+
 import com.bridgelabz.model.PasswordUpdate;
 import com.bridgelabz.model.User;
 
