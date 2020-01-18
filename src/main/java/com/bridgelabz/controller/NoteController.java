@@ -126,21 +126,21 @@ public class NoteController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(new Response("Reminder removed", 200, noteId));
 	}
 
-//	@PostMapping("/notes/trashed/{noteId}")
-//	public ResponseEntity<Response> trashed(@RequestHeader String token, @PathVariable Long noteId) {
-//		if (noteServices.trashed(token, noteId)) {
-//			return new ResponseEntity<>(new Response(HttpStatus.OK.value(), "Note is Trashed"), HttpStatus.OK);
-//		}
-//		return new ResponseEntity<>(new Response(HttpStatus.BAD_REQUEST.value(), "Note is Trashed"),
-//				HttpStatus.BAD_REQUEST);
-//	}
-//
-//	@PostMapping("/notes/restore/{noteId}")
-//	public ResponseEntity<Response> restore(@RequestHeader String token, @PathVariable Long noteId) {
-//		if (noteServices.restored(token, noteId)) {
-//			return new ResponseEntity<>(new Response(HttpStatus.OK.value(), "Note is Restored"), HttpStatus.OK);
-//		}
-//		return new ResponseEntity<>(new Response(HttpStatus.BAD_REQUEST.value(), "Note is Trashed"),
-//				HttpStatus.BAD_REQUEST);
-//	}
+	@PostMapping("/notes/trashed/{noteId}")
+	public ResponseEntity<Response> trashed(@RequestHeader String token, @PathVariable Long noteId) {
+		if (noteServices.trashed(token, noteId)) {
+			return new ResponseEntity<>(new Response(HttpStatus.OK.value(), "Note is Trashed"), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(new Response(HttpStatus.BAD_REQUEST.value(), "Note is Trashed"),
+				HttpStatus.BAD_REQUEST);
+	}
+
+	@PostMapping("/notes/restore/{noteId}")
+	public ResponseEntity<Response> restore(@RequestHeader String token, @PathVariable Long noteId) {
+		if (noteServices.restored(token, noteId)) {
+			return new ResponseEntity<>(new Response(HttpStatus.OK.value(), "Note is Restored"), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(new Response(HttpStatus.BAD_REQUEST.value(), "Note is Trashed"),
+				HttpStatus.BAD_REQUEST);
+	}
 }
