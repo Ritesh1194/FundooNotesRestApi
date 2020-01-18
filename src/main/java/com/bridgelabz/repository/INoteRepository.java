@@ -22,9 +22,9 @@ public interface INoteRepository {
 
 	public List<Note> getNotesOfSameLabel(Long userId, Long labelId);
 
-//	public boolean setRestored(Long userId, Long noteId);
-//
-//	public boolean setTrashed(Long userId, Long noteId);
+	public boolean setRestored(Long userId, Long noteId);
+
+	public boolean setTrashed(Long userId, Long noteId);
 
 	public boolean setRemaineder(Long userId, Long noteId, LocalDateTime time);
 }
