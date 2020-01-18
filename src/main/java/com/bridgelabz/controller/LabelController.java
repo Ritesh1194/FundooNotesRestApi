@@ -83,7 +83,7 @@ public class LabelController {
 	public ResponseEntity<Response> get(@RequestHeader("token") String token) {
 		List<Label> labels = service.getLabel(token);
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(new Response("All the labels that you are using", 200, labels));
+				.body(new Response("All the labels that you are using", 200));
 
 	}
 
@@ -91,6 +91,6 @@ public class LabelController {
 	public ResponseEntity<Response> getNotes(@RequestHeader("token") String token, @RequestParam("id") Long labelId) {
 		List<Note> list = service.getAllNotes(token, labelId);
 
-		return ResponseEntity.status(HttpStatus.OK).body(new Response("The result is", 200, list));
+		return ResponseEntity.status(HttpStatus.OK).body(new Response("The result is", 200));
 	}
 }
