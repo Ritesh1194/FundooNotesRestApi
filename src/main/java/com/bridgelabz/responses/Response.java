@@ -27,4 +27,8 @@ public class Response {
 		this.statusCode = statusCode;
 		this.obj = obj;
 	}
+
+	public Response(int value, String string) {
+		// TODO Auto-generated constructor stub
+	}
 }
