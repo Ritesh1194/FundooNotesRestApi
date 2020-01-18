@@ -28,7 +28,7 @@ import com.bridgelabz.services.NoteServiceImpl;
 @RequestMapping("/note")
 public class NoteController {
 	@Autowired
-	private NoteServiceImpl noteServices ;
+	private NoteServiceImpl noteServices;
 
 	@PostMapping("/create")
 	public ResponseEntity<Response> registration(@RequestBody NoteDto information, @RequestHeader String token) {
@@ -58,7 +58,7 @@ public class NoteController {
 	@PostMapping("/pin/{id}")
 	public ResponseEntity<Response> pin(@PathVariable long id, @RequestHeader("token") String token) {
 		System.out.println("inside pin" + id);
-		noteServices.pin(id, token);
+		noteServices.pinNote(id, token);
 		return ResponseEntity.status(HttpStatus.OK).body(new Response("note pinned", 200));
 
 	}
@@ -68,14 +68,6 @@ public class NoteController {
 		System.out.println("inside delete controller" + id);
 		noteServices.deleteNote(id, token);
 		return ResponseEntity.status(HttpStatus.OK).body(new Response("note deleted", 200));
-
-	}
-
-	@DeleteMapping("/deletePermanently/{id}")
-	public ResponseEntity<Response> deletePermenently(@PathVariable long id, @RequestHeader("token") String token) {
-		System.out.println("inside delete controller" + id);
-		noteServices.deleteNotePemenetly(id, token);
-		return ResponseEntity.status(HttpStatus.OK).body(new Response("note deleted permanently", 200));
 
 	}
 
@@ -133,4 +125,22 @@ public class NoteController {
 		noteServices.removeReminder(noteId, token, null);
 		return ResponseEntity.status(HttpStatus.CREATED).body(new Response("Reminder removed", 200, noteId));
 	}
+
+//	@PostMapping("/notes/trashed/{noteId}")
+//	public ResponseEntity<Response> trashed(@RequestHeader String token, @PathVariable Long noteId) {
+//		if (noteServices.trashed(token, noteId)) {
+//			return new ResponseEntity<>(new Response(HttpStatus.OK.value(), "Note is Trashed"), HttpStatus.OK);
+//		}
+//		return new ResponseEntity<>(new Response(HttpStatus.BAD_REQUEST.value(), "Note is Trashed"),
+//				HttpStatus.BAD_REQUEST);
+//	}
+//
+//	@PostMapping("/notes/restore/{noteId}")
+//	public ResponseEntity<Response> restore(@RequestHeader String token, @PathVariable Long noteId) {
+//		if (noteServices.restored(token, noteId)) {
+//			return new ResponseEntity<>(new Response(HttpStatus.OK.value(), "Note is Restored"), HttpStatus.OK);
+//		}
+//		return new ResponseEntity<>(new Response(HttpStatus.BAD_REQUEST.value(), "Note is Trashed"),
+//				HttpStatus.BAD_REQUEST);
+//	}
 }
