@@ -6,7 +6,7 @@ import com.bridgelabz.model.Label;
 import com.bridgelabz.model.Note;
 
 public interface ILabelRepository {
-	public Label save(Label label);
+	public Label saveLabel(Label label);
 
 	public Note saveNote(Note note);
 
@@ -14,11 +14,13 @@ public interface ILabelRepository {
 
 	public Label fetchLabel(Long userid, String labelname);
 
-	public int deleteLabel(long i);
+	// public int deleteLabel(long i);
 
 	public List<Label> getAllLabel(long id);
 
-	public Label update(Integer labelId, Label label, String token);
+	public Label updateLabel(Integer labelId, Label label, String token);
 
 	public Label getLabel(Long id);
+
+	// public Object findByNoteIdAndLabelId(Long labelId, Long noteId);
 }
