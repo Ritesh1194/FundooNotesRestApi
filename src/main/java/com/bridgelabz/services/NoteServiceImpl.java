@@ -2,17 +2,20 @@ package com.bridgelabz.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.beans.BeanUtils;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.bridgelabz.exception.UserException;
 import com.bridgelabz.model.Note;
 import com.bridgelabz.model.NoteDto;
 import com.bridgelabz.model.NoteUpdate;
 import com.bridgelabz.model.ReminderDto;
 import com.bridgelabz.model.User;
-import com.bridgelabz.repository.NoteRepositoryImplementation;
-import com.bridgelabz.repository.UserRepositoryImplementation;
+import com.bridgelabz.repository.INoteRepository;
+import com.bridgelabz.repository.IUserRepository;
 import com.bridgelabz.util.JwtGenerator;
 
 @Service
@@ -20,15 +23,18 @@ public class NoteServiceImpl implements INoteServices {
 	@Autowired
 	private JwtGenerator tokenGenerator;
 	@Autowired
-	private UserRepositoryImplementation repository;
+	private IUserRepository repository;
 
 	private User user = new User();
 	@Autowired
-
-	private NoteRepositoryImplementation noteRepository;
+	private INoteRepository noteRepository;
 
 	private Note note = new Note();
 
+	@Autowired
+	ModelMapper modelMapper;
+
+	@Transactional
 	@Override
 	public boolean createNote(NoteDto noteDto, String token) {
 		long userId;
@@ -40,13 +46,14 @@ public class NoteServiceImpl implements INoteServices {
 			System.out.println("User " + user);
 
 			if (user != null) {
-				BeanUtils.copyProperties(noteDto, Note.class); // note = modelMapper.map(noteDto, Note.class);
+				// BeanUtils.copyProperties(noteDto, Note.class);
+				note = modelMapper.map(noteDto, Note.class);
 				note.setCreatedDateAndTime(LocalDateTime.now());
 				note.setArchieved(false);
 				note.setPinned(false);
 				note.setTrashed(false);
 				note.setColor("Blue");
-				Note noteInformation = noteRepository.saveNote(note);
+				Note noteInformation = noteRepository.createNote(note);
 				System.out.println(noteInformation);
 			} else {
 				throw new UserException("note is not present with the given id ");
@@ -59,6 +66,7 @@ public class NoteServiceImpl implements INoteServices {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean updateNote(NoteUpdate information, String token) {
 		try {
@@ -67,17 +75,17 @@ public class NoteServiceImpl implements INoteServices {
 
 			user = repository.getUserById(userid);
 
-			Note note = noteRepository.findById(information.getId());
+			Note note = noteRepository.findById(information.getNoteId());
 			if (note != null) {
 				System.out.println("note is   " + note);
-				note.setId(information.getId());
+				note.setNoteId(information.getNoteId());
 				note.setDescription(information.getDescription());
 				note.setTitle(information.getTitle());
 				note.setPinned(information.isPinned());
 				note.setArchieved(information.isArchieved());
 				note.setArchieved(information.isTrashed());
 				note.setUpDateAndTime(LocalDateTime.now());
-				Note note1 = noteRepository.saveNote(note);
+				Note note1 = noteRepository.createNote(note);
 				return true;
 			}
 		} catch (Exception e) {
@@ -86,61 +94,54 @@ public class NoteServiceImpl implements INoteServices {
 		return false;
 	}
 
+	@Transactional
 	@Override
 	public boolean deleteNote(long id, String token) {
 		Note note = noteRepository.findById(id);
+		System.out.println("Delete Node1");
 		note.setTrashed(!note.isTrashed());
-		noteRepository.saveNote(note);
+		noteRepository.deleteNote(id, note);
+		System.out.println("Delete Node2");
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean archievNote(long id, String token) {
 		Note note = noteRepository.findById(id);
 		note.setArchieved(!note.isArchieved());
-		noteRepository.saveNote(note);
+		noteRepository.createNote(note);
 		return true;
 	}
 
+	@Transactional
 	@Override
-	public boolean pin(long id, String token) {
+	public boolean pinNote(long id, String token) {
 		Note note = noteRepository.findById(id);
 		note.setPinned(!note.isPinned());
-		noteRepository.saveNote(note);
+		noteRepository.createNote(note);
 		return true;
 	}
 
-	@Override
-	public boolean deleteNotePemenetly(long id, String token) {
-		try {
-			Long userid = (long) tokenGenerator.parseJWT(token);
-			System.out.println("user id" + " " + userid);
-			Note note = noteRepository.findById(id);
-			System.out.println(note);
-		}
-
-		catch (Exception e) {
-			throw new UserException("user is not present");
-		}
-		return false;
-	}
-
+	@Transactional
 	@Override
 	public List<Note> getAllNotes(String token) {
+		List<Note> list11 = null;
 		try {
 			Long userId = (long) tokenGenerator.parseJWT(token);
 			user = repository.getUserById(userId);
 			if (user != null) {
 				System.out.println("user logged in" + user.getUserId());
 				System.out.println("user ");
-				List<Note> list11 = noteRepository.getNotes(userId);
+				list11 = noteRepository.getNotes(userId);
 			}
 		} catch (Exception e) {
 			throw new UserException("error occured");
 		}
-		return null;
+		return list11;
 	}
 
+	@Transactional
 	@Override
 	public List<Note> getTrashedNotes(String token) {
 		try {
@@ -163,17 +164,18 @@ public class NoteServiceImpl implements INoteServices {
 		}
 	}
 
+	@Transactional
 	@Override
 	public List<Note> getArchiveNote(String token) {
+		List<Note> list;
 		try {
 			Long userId = (long) tokenGenerator.parseJWT(token);
 			user = repository.getUserById(userId);
 
 			if (user != null) {
 				System.out.println(user);
-				List<Note> list = noteRepository.getArchiveNotes(userId);
+				list = noteRepository.getArchiveNotes(userId);
 				System.out.println("note fetched is" + " " + list.get(0).toString());
-				return list;
 
 			} else {
 				System.out.println(user + "hello");
@@ -183,8 +185,10 @@ public class NoteServiceImpl implements INoteServices {
 		} catch (Exception e) {
 			throw new UserException("error occured");
 		}
+		return list;
 	}
 
+	@Transactional
 	@Override
 	public boolean addColour(Long noteId, String token, String colour) {
 
@@ -195,7 +199,7 @@ public class NoteServiceImpl implements INoteServices {
 			System.out.println("user id" + " " + userid);
 			Note note = noteRepository.findById(noteId);
 			note.setColor(colour);
-			noteRepository.saveNote(note);
+			noteRepository.createNote(note);
 
 		} catch (Exception e) {
 			throw new UserException("authentication failed");
@@ -203,6 +207,7 @@ public class NoteServiceImpl implements INoteServices {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean addReminder(Long noteId, String token, ReminderDto reminder) {
 		Long userid;
@@ -217,7 +222,7 @@ public class NoteServiceImpl implements INoteServices {
 
 				note.setReminder(reminder.getReminder());
 				System.out.println(note.getColor());
-				noteRepository.saveNote(note);
+				noteRepository.createNote(note);
 			} else {
 				throw new UserException("note doesn't exist");
 			}
@@ -228,6 +233,7 @@ public class NoteServiceImpl implements INoteServices {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean removeReminder(Long noteId, String token, ReminderDto reminder) {
 		Long userid;
@@ -242,7 +248,7 @@ public class NoteServiceImpl implements INoteServices {
 
 				note.setReminder(null);
 				System.out.println(note.getColor());
-				noteRepository.saveNote(note);
+				noteRepository.createNote(note);
 			} else {
 				throw new UserException("note doesn't exist");
 			}
@@ -253,6 +259,7 @@ public class NoteServiceImpl implements INoteServices {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public List<Note> getAllPinnedNotes(String token) {
 		List<Note> allNotes;
@@ -270,4 +277,25 @@ public class NoteServiceImpl implements INoteServices {
 		}
 		return null;
 	}
+
+//	@Transactional
+//	@Override
+//	public boolean restored(String token, Long noteId) {
+//		Long userId = (long) tokenGenerator.parseJWT(token);
+//		if (noteRepository.setRestored(userId, noteId)) {
+//			return true;
+//		}
+//		return false;
+//	}
+//
+//	@Transactional
+//	@Override
+//	public boolean trashed(String token, Long noteId) {
+////			Long userId=webClientService.getUserId(token);
+//		Long userId = (long) tokenGenerator.parseJWT(token);
+//		if (noteRepository.setTrashed(userId, noteId)) {
+//			return true;
+//		}
+//		return false;
+//	}
 }
