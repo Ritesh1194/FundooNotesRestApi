@@ -32,7 +32,8 @@ public interface INoteServices {
 
 	List<Note> getAllPinnedNotes(String token);
 
-//	public boolean restored(String token, Long noteId);
+	public boolean restored(String token, Long noteId);
+
 //
-//	public boolean trashed(String token, Long noteId);
+	public boolean trashed(String token, Long noteId);
 }
