@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,10 @@ import com.bridgelabz.responses.MailResponse;
 import com.bridgelabz.util.JwtGenerator;
 import com.bridgelabz.util.MailServiceProvider;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserServicesImplementation implements IUserServices {
 	@Autowired
 	private User userInformation;
@@ -42,31 +46,34 @@ public class UserServicesImplementation implements IUserServices {
 	@Transactional
 	@Override
 	public boolean register(UserDto information) {
-		System.out.println("in regis service, before ....");
+		log.info("in regis service, before ....");
 		User user = repository.getUser(information.getEmail());
-		System.out.println(user);
+		log.info("User Is " + user);
 
 		if (user == null) {
-			System.out.println("in regis service , above mapping");
-			userInformation = modelMapper.map(information, User.class);
-			// BeanUtils.copyProperties(information, User.class);
+			log.info("in regis service , above mapping");
+			// userInformation = modelMapper.map(information, User.class);
+			BeanUtils.copyProperties(information, response);
+			BeanUtils.copyProperties(information, userInformation);
+
 			userInformation.setCreatedDate(LocalDateTime.now());
 			String epassword = encryption.encode(information.getPassword());
 			userInformation.setPassword(epassword);
 			userInformation.setVerified(false);
-			System.out.println("id" + " " + userInformation.getUserId());
-			System.out.println("token" + " " + generate.jwtToken(userInformation.getUserId()));
+			user = repository.save(userInformation);
+			log.info("id" + " " + userInformation.getUserId());
+			log.info("token" + " " + generate.jwtToken(userInformation.getUserId()));
 
 			String mailResponse = response.formMessage("http://192.168.1.26:9050/user/verify",
 					generate.jwtToken(userInformation.getUserId()));
 
-			System.out.println(mailResponse);
+			log.info(mailResponse);
 			mailObject.setEmail(information.getEmail());
 			mailObject.setMessage(mailResponse);
 			mailObject.setSubject("verification");
 
 			mailServiceProvider.sendEmail(information.getEmail(), "Verification", mailResponse);
-			user = repository.save(userInformation);
+
 			return true;
 		} else {
 			throw new UserException("user already exist with the same mail id");
@@ -81,7 +88,7 @@ public class UserServicesImplementation implements IUserServices {
 		if (user != null) {
 
 			if ((user.isVerified() == true) && encryption.matches(information.getPassword(), user.getPassword())) {
-				System.out.println(generate.jwtToken(user.getUserId()));
+				log.info(generate.jwtToken(user.getUserId()));
 				return user;
 			} else {
 				String mailResponse = response.formMessage("http://localhost:9050/user/verify",
@@ -103,7 +110,7 @@ public class UserServicesImplementation implements IUserServices {
 
 			Long id = null;
 			try {
-				System.out.println("in update method" + "   " + generate.parseJWT(token));
+				log.info("in update method" + "   " + generate.parseJWT(token));
 				id = (long) generate.parseJWT(token);
 				String epassword = encryption.encode(information.getConfirmPassword());
 				information.setConfirmPassword(epassword);
@@ -127,7 +134,7 @@ public class UserServicesImplementation implements IUserServices {
 	@Transactional
 	@Override
 	public boolean verify(String token) throws Exception {
-		System.out.println("id in verification" + (long) generate.parseJWT(token));
+		log.info("id in verification" + (long) generate.parseJWT(token));
 		Long id = (long) generate.parseJWT(token);
 		repository.verify(id);
 		return true;
